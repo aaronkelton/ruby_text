@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+# #! signifies the hash bang (shebang)
+# call this file e.g. cat file.txt | urls
+# printf "hello\nworld http://www.example.com/\nhttps://example.net/" | urls
+# first attempt => zsh: command not found: urls
+#   maybe need to add to path
+
+# each stream of chars delimited by `\n` is effectively split into elements
+$stdin.each_line do |line|
+  # regex literal h t t p followed by optional s (I added parentheses for emphasis)
+  # followed by liter colon, two forward slashes, then presumably one or more valid chars
+  # returns an array of url strings
+  # scan takes a pattern and returns an array when no block given
+  urls = line.scan( %r{https?://\S+} )
+
+  urls.each do |url|
+    # take each element which is a url as string, and output to standard
+    puts url
+  end
+end
+
+
+# Here I'm demonstrating the `chmod +x urls` did NOT work; neither with `sudo`
+#ruby_text master % chmod +x urls
+#ruby_text master % ll urls
+#-rwxr-xr-x  1 aaron  staff  795 Jun  5 21:22 urls
+#ruby_text master % sudo chmod +x urls
+#Password:
+#ruby_text master % ll urls
+#-rwxr-xr-x  1 aaron  staff  795 Jun  5 21:22 urls
+#ruby_text master % printf "hello\nworld http://www.example.com/\nhttps://example.net/" | urls
+#zsh: command not found: urls
+#ruby_text master % ll
+#total 128
+#drwxr-xr-x  20 aaron  staff    640 Jun  5 21:07 .
+#drwxr-xr-x  23 aaron  staff    736 May 25 17:47 ..
+#-rw-r--r--@  1 aaron  staff  10244 May 29 12:23 .DS_Store
+#drwxr-xr-x  12 aaron  staff    384 Jun  5 20:42 .git
+#-rw-r--r--   1 aaron  staff     13 May 25 18:03 .gitignore
+#-rw-r--r--@  1 aaron  staff    378 Sep 29  2015 access_log
+#-rw-r--r--   1 aaron  staff   1041 May 26 12:42 character-count.rb
+#-rw-r--r--   1 aaron  staff     56 May 26 12:09 commas.txt
+#drwxr-xr-x   3 aaron  staff     96 May 29 10:50 data
+#-rw-r--r--   1 aaron  staff      0 May 25 18:16 empty_file.txt
+#-rw-r--r--   1 aaron  staff    111 May 25 17:52 file.txt
+#-rw-r--r--   1 aaron  staff   2087 May 29 14:04 noaa-all-rows.rb
+#-rw-r--r--   1 aaron  staff    371 May 29 11:11 noaa-first-row-simple.rb
+#-rw-r--r--   1 aaron  staff   1525 May 29 22:51 noaa-seek.rb
+#-rw-r--r--   1 aaron  staff    212 May 29 22:46 noaa-skip-first-row.rb
+#-rw-r--r--   1 aaron  staff   2480 May 26 11:08 requests-by-ip.rb
+#-rw-r--r--   1 aaron  staff   2381 May 25 19:04 sandbox.rb
+#drwxr-xr-x@ 67 aaron  staff   2144 May 25 18:19 source_code
+#-rw-r--r--   1 aaron  staff    150 Jun  5 20:41 to-uppercase.rb
+#-rwxr-xr-x   1 aaron  staff    795 Jun  5 21:22 urls
+
+# finally added this directory to .bashrc
+# export PATH="$PATH":~/dev/ruby_text
+# ruby_text master % printf "hello\nworld http://www.example.com/\nhttps://example.net/" | urls
+# =>  
+# => s
+# ok ok, it was the () I added for readability; these parens changed the regex!
