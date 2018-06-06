@@ -1,0 +1,59 @@
+# evaluates ruby code from the command line (non-irb)
+ruby -e 'puts "hello world"'
+
+# STDIN points to the same object as $stdin; some say the constant is prettier
+printf "foo\nbar\n" | ruby -e 'STDIN.each {|l|puts l.upcase}'
+
+# The -ne flag (n with e) can be approximated as the following while loop
+while gets
+  # do code things
+end
+
+# Cryptic globals, like $_, is the variable assigned to each processed line
+# So line 5 becomes below and reminds me of arr.map{|n|&:+} or whatever
+printf "foo\nbar\n" | ruby -ne 'puts $_.upcase'
+#If you leave off the -n, you get a NoMethodError
+#% printf "foo\nbar\n" | ruby -e 'puts $_.upcase' 
+#-e:1:in `<main>': undefined method `upcase' for nil:NilClass (NoMethodError)
+
+# print takes $_ as a default argument
+printf "foo\nbar\n" | ruby -ne 'print'
+# => foo
+# => bar
+printf "foo\nbar\n" | ruby -ne 'print if $_.start_with? "f"'
+# => foo
+printf "foo\nbar\n" | ruby -ne 'print if /^f/'
+printf "foo\nbar\n" | ruby -ne 'print if %r{^f}'
+printf "foo\nbar\n" | ruby -ne 'print if %r{\Af}'
+# => foo
+
+# you can use gsub and sub with just -e, but you must use -n to operate implicitly on $_
+echo 'COBOL is the best!' | ruby -ne 'print gsub("COBOL", "Ruby")'
+
+% cat scores.txt
+#Bob 40
+#Alice 98
+#Gillian 100
+#Fred 67
+
+cat scores.txt | ruby -ne 'print if $_.split[1].to_i > 50'
+#Alice 98
+#Gillian 100
+#Fred 67
+
+# use Unix/Bash things simply; supplement w/ Ruby when necessary
+cat scores.txt | ruby -ne 'print if $_.split[1].to_i > 50' | ruby -ne 'puts $_.split.first'
+cat scores.txt | ruby -ne 'print if $_.split[1].to_i > 50' | cut -d' ' -f1
+#Alice
+#Gillian
+#Fred
+
+# The -p flag (p with e) can be approximated as the following while loop
+while gets
+  # do code things just like with -n
+  puts $_ # <-- and do me last "plus puts"
+end
+
+echo 'COBOL is the best!' | ruby -pe 'gsub("COBOL", "Ruby")'
+# no need to call print with -n
+# -p == -n with print
