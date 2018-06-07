@@ -1,0 +1,5 @@
+[Tue Dec 30 15:25:20 2014] [error] Directory index forbidden
+[Tue Dec 30 15:26:11 2014] [notice] caught SIGTERM, shutting down
+[Tue Dec 30 15:26:14 2014] [notice] Digest: generating secret ...
+[Tue Dec 30 15:26:14 2014] [notice] Digest: done
+[Tue Dec 30 15:26:14 2014] [notice] Apache (Unix) -- resuming normal operations

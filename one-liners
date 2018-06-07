@@ -57,3 +57,51 @@ end
 echo 'COBOL is the best!' | ruby -pe 'gsub("COBOL", "Ruby")'
 # no need to call print with -n
 # -p == -n with print
+
+# ---------------------------------------------------------------------
+
+# BEGIN behaves same/similar to ||= for setting counter variable
+printf "foo\nbar\nbaz\n" | ruby -ne 'BEGIN { i=1 }; puts "#{i} #{$_}"; i += 1'
+printf "foo\nbar\nbaz\n" | ruby -ne 'i ||= 1; puts "#{i} #{$_}"; i += 1'
+# =>
+  #1 foo
+  #2 bar
+  #3 baz
+
+# END block pretty cool too; add the numbers on each pass; but only puts total
+printf "12\n76\n42" | ruby -ne 'BEGIN { n = 0 }; n += $_.to_i; END { puts n }'
+# => 130
+
+# I'm not sure if this is what the author intended.
+# The longest line to the naked eye is 'bb', but this script returns 'a'
+printf "a\nbb" | ruby -ne 'x ||= $_; x = $_ if $_.length > x.length; END { puts x }'
+# => a
+# It turns out that the length of 'a\n' is 2. You'd have to do $_.chomp for this script to return 'bb'
+
+error_log = <<-TXT # I have no idea if this is a correct multiline heredoc
+[Tue Dec 30 15:25:20 2014] [error] Directory index forbidden
+[Tue Dec 30 15:26:11 2014] [notice] caught SIGTERM, shutting down
+[Tue Dec 30 15:26:14 2014] [notice] Digest: generating secret ...
+[Tue Dec 30 15:26:14 2014] [notice] Digest: done
+[Tue Dec 30 15:26:14 2014] [notice] Apache (Unix) -- resuming normal operations
+TXT
+
+# match all the chars after [error] and puts the first match
+cat error_log | ruby -ne '$_ =~ /^\[.+\] \[error\] (.*)$/ and puts $1'
+# => Directory index forbidden
+
+# demonstrate using built-in UNIX tools. uniq -c means "count occurrences"
+# not sure why it returns with all the preceding white space
+# also differs from book because author doesn't include error_log file
+cat error_log | ruby -ne '$_ =~ /^\[.+\] \[error\] (.*)$/ and puts $1' | sort | uniq -c
+# =>    1 Directory index forbidden
+
+# just another example of appending more UNIX commands; -rn (natural desc)
+cat error_log \
+  | ruby -ne '$_ =~ /^\[.+\] \[error\] (.*)$/ and puts $1' \
+  | sort | uniq -c | sort -rn
+
+# each time we iteratively get closer to our final result; first 10 lines received
+cat error_log \
+  | ruby -ne '$_ =~ /^\[.+\] \[error\] (.*)$/ and puts $1' \
+  | sort | uniq -c | sort -rn | head -n 10
