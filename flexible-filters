@@ -1,0 +1,10 @@
+# author says its common- even standard- to accept stream from file and STDIN
+echo "hello from standard input" | cat
+# => hello from standard input
+
+# but when I tried `cat "hello"`, I got "cat: hello: No such file or directory"
+# when I knew that echo was piping no file or directory to `cat`, hence this
+# excerpt from `man cat`
+"If file is a single dash (`-') or absent, cat reads from the standard input."
+
+
